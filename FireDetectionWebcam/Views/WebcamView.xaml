@@ -33,14 +33,15 @@
     <Grid>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
             <!--ComboBox-->
@@ -95,26 +96,34 @@
                     CommandParameter="{Binding ElementName=_this}"/>
             </StackPanel>
 
+            <CheckBox
+                x:Name="detectFireCB"
+                Grid.Row="1"
+                Margin="10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="Enable Detect Fire"
+                IsChecked="{Binding IsYoloChecked}"
+                IsEnabled="{Binding IsYoloEnabled}"/>
+            
             <!--Button-->
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
 
                 <Button
                     x:Name="btnStart"
-                    Width="100"
-                    Margin="10"
-                    Padding="10"
+                    Width="100" Height="50"
+                    Margin="10" Padding="10"
                     Command="{Binding StartCommand}"
                     CommandParameter="{Binding ElementName=_this}"
                     Content="Start" 
                     IsEnabled="{Binding IsStartEnabled}"/>
                 <Button
                     x:Name="btnStop"
-                    Width="100"
-                    Margin="10"
-                    Padding="10"
+                    Width="100" Height="50"
+                    Margin="10" Padding="10"
                     Command="{Binding StopCommand}"
                     CommandParameter="{Binding ElementName=_this}"
                     Content="Stop"
@@ -128,31 +137,8 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="200" />
-            </Grid.ColumnDefinitions>
-
-            <!--<StackPanel
-                x:Name="cameraLoading"
-                Grid.Row="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Vertical"
-                Visibility="{Binding CameraLoadingVisibility}">
-
-                <ProgressBar
-                    Width="100"
-                    Height="15"
-                    IsIndeterminate="True" />
-
-                <TextBlock Text="Webcam loading..." />
-
-            </StackPanel>-->
-
             <Border
                 x:Name="webcamContainer"
-                Grid.Column="0"
                 Width="640"
                 Height="640"
                 BorderBrush="Black"
@@ -161,38 +147,6 @@
                 <Image x:Name="webcamPreview" />
 
             </Border>
-
-            <Grid Grid.Column="1">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-
-
-
-                <CheckBox
-                    x:Name="detectFireCB"
-                    Grid.Row="0"
-                    Margin="10"
-                    VerticalAlignment="Center"
-                    Content="Enable Detect Fire"
-                    IsChecked="{Binding IsYoloChecked}"
-                    IsEnabled="{Binding IsYoloEnabled}"/>
-
-                <RichTextBox
-                    x:Name="txtQRCodeData"
-                    Grid.Row="2"
-                    Margin="10,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    VerticalScrollBarVisibility="Auto"/>
-
-
-            </Grid>
-
         </Grid>
 
     </Grid>

@@ -63,6 +63,11 @@
     <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="YoloV8" Version="4.1.5" />
+    <PackageReference Include="YoloV8.Gpu" Version="4.1.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileDetectionCPU\FireDetectionWithCPU.csproj" />
+    <ProjectReference Include="..\FileDetectionGPU\FireDetectionWithGPU.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\model\best.onnx">

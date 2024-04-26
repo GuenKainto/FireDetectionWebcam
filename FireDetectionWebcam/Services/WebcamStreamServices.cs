@@ -1,9 +1,7 @@
-﻿using Compunet.YoloV8;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +19,9 @@ namespace FireDetectionWebcam.Services
         private int _width;
         private int _height;
         private CancellationTokenSource _cancellationTokenSource;
-        private YoloV8Predictor predictor;
+
+        //private int _currentFrameCount = 0;
+        //private const int _detectEveryNFrame = 2;
 
         public event EventHandler OnYoloDetect;
 
@@ -35,9 +35,6 @@ namespace FireDetectionWebcam.Services
             _width = webcamWidth;
             _height = webcamHeight;
             CameraDeviceId = cameraDeviceId;
-
-            var modelPath = Path.Combine(Environment.CurrentDirectory, "Assets\\model\\best.onnx");
-            predictor = YoloV8Predictor.Create(modelPath);
         }
 
         public async Task Start()
@@ -47,8 +44,6 @@ namespace FireDetectionWebcam.Services
             {
                 try
                 {
-                    // Creation and disposal of this object should be done in the same thread 
-                    // because if not it throws disconnectedContext exception
                     var videoCapture = new VideoCapture();
 
                     if (!videoCapture.Open(CameraDeviceId))
@@ -65,26 +60,20 @@ namespace FireDetectionWebcam.Services
                             if (!frame.Empty())
                             {
                                 _lastFrame = BitmapConverter.ToBitmap(frame);
+                                //if (_currentFrameCount % _detectEveryNFrame == 0) 
+                                //{
+                                    if (OnYoloDetect != null)
+                                    {
+                                        _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
+                                    }
+                                //}
                                 
-                                if (OnYoloDetect != null)
-                                {
-                                    _lastFrame = await PredictServices.PredictAsync(_lastFrame);
-                                    //var image = ConvertImageTypeServices.ConvertToImageSharpImage(systemDrawingImage: _lastFrame);
-                                    //ImageSelector imageSelector = new(image);
-                                    //var result = predictor.Detect(imageSelector);
-                                    //var plotted = await result.PlotImageAsync(image);
-                                    //_lastFrame = (System.Drawing.Bitmap)ConvertImageTypeServices.ConvertToSystemDrawingImage(imageSharpImage: plotted);
-                                }
-
                                 var lastFrameBitmapImage = _lastFrame.ToBitmapSource();
                                 lastFrameBitmapImage.Freeze();
                                 _imageControl.Dispatcher.Invoke(() => 
                                     _imageControl.Source = lastFrameBitmapImage
                                 );
-
-
                             }
-
                             // 30 FPS
                             await Task.Delay(33);
                         }
@@ -100,7 +89,6 @@ namespace FireDetectionWebcam.Services
 
             if (_previewTask.IsFaulted)
             {
-                // To let the exceptions exit
                 await _previewTask;
             }
         }
@@ -115,7 +103,6 @@ namespace FireDetectionWebcam.Services
             if (!_previewTask.IsCompleted)
             {
                 _cancellationTokenSource.Cancel();
-                //wait for done previewTask
                 await _previewTask;
             }
         }
