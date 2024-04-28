@@ -13,7 +13,7 @@ namespace FireDetectionWebcam.Services
             {
                 string gpuName = "" + obj["Name"];
                 MessageBox.Show("Name:" + gpuName);
-                if (gpuName.Contains("Nvidia")) return true;
+                if (gpuName.Contains("NVIDIA")) return true;
             }
             return false;
         }
