@@ -96,16 +96,54 @@
                     CommandParameter="{Binding ElementName=_this}"/>
             </StackPanel>
 
-            <CheckBox
-                x:Name="detectFireCB"
-                Grid.Row="1"
-                Margin="10"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Content="Enable Detect Fire"
-                IsChecked="{Binding IsYoloChecked}"
-                IsEnabled="{Binding IsYoloEnabled}"/>
             
+            <!--CheckBox-->
+            <Grid Grid.Row="1">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>-->
+                
+                <StackPanel Margin="20 0 0 0">
+                    <CheckBox
+                        x:Name="detectFireCB"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="Enable Detect Fire"
+                        IsChecked="{Binding IsYoloChecked}"
+                        IsEnabled="{Binding IsYoloEnabled}"/>
+
+                    <CheckBox
+                        x:Name="useGPUCB"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="Use GPU for detect Fire"
+                        IsChecked="{Binding IsUseGPUChecked}"
+                        IsEnabled="{Binding IsUseGPUEnabled}"/>
+
+                    <TextBlock 
+                        VerticalAlignment="Center"
+                        Text="{Binding GPUSupport}"
+                        Margin="10"/>
+                </StackPanel>
+
+                <!--<Grid 
+                    Grid.Column="0"
+                    Margin="35 0 0 0">
+                    <Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock 
+                        VerticalAlignment="Center"
+                        Text="Name "/>
+                </Grid>-->
+
+            </Grid>
+
+
             <!--Button-->
             <StackPanel
                 Grid.Row="2"

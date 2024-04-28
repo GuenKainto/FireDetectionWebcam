@@ -16,25 +16,21 @@ namespace FireDetectionWebcam.Services
         private Task _previewTask;
         public int CameraDeviceId ;
         private Image _imageControl;
-        private int _width;
-        private int _height;
         private CancellationTokenSource _cancellationTokenSource;
 
         //private int _currentFrameCount = 0;
         //private const int _detectEveryNFrame = 2;
 
-        public event EventHandler OnYoloDetect;
+        public bool OnUseGPU;
+        public bool OnYoloDetect;
 
         public WebcamStreamServices(
             Image imageControl,
-            int webcamWidth,
-            int webcamHeight,
             int cameraDeviceId)
         {
             _imageControl = imageControl;
-            _width = webcamWidth;
-            _height = webcamHeight;
             CameraDeviceId = cameraDeviceId;
+            OnUseGPU = false;
         }
 
         public async Task Start()
@@ -62,9 +58,16 @@ namespace FireDetectionWebcam.Services
                                 _lastFrame = BitmapConverter.ToBitmap(frame);
                                 //if (_currentFrameCount % _detectEveryNFrame == 0) 
                                 //{
-                                    if (OnYoloDetect != null)
+                                    if (OnYoloDetect)
                                     {
-                                        _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
+                                        if (OnUseGPU)
+                                        {
+                                            _lastFrame = await PredictServices.PredictAsyncWithGPU(_lastFrame);
+                                        }
+                                        else
+                                        {
+                                            _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
+                                        }
                                     }
                                 //}
                                 
@@ -106,6 +109,7 @@ namespace FireDetectionWebcam.Services
                 await _previewTask;
             }
         }
+
         public void Dispose()
         {
             _cancellationTokenSource?.Cancel();

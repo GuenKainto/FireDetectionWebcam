@@ -27,6 +27,20 @@ namespace FireDetectionWebcam.ViewModels
             }
         }
 
+        private string _gpuSupport;
+        public string GPUSupport
+        {
+            get => _gpuSupport;
+            set
+            {
+                if(_gpuSupport != value)
+                {
+                    _gpuSupport = value;
+                    OnPropertyChanged(nameof(GPUSupport));
+                }
+            }
+        }
+
         private bool _isYoloChecked;
         public bool IsYoloChecked
         {
@@ -57,6 +71,36 @@ namespace FireDetectionWebcam.ViewModels
             }
         }
 
+        private bool _isUseGPUChecked;
+        public bool IsUseGPUChecked
+        {
+            get => _isUseGPUChecked;
+            set
+            {
+                if (_isUseGPUChecked != value)
+                {
+                    _isUseGPUChecked = value;
+                    OnPropertyChanged(nameof(_isUseGPUChecked));
+                    if (IsUseGPUChecked) IsUseGPUCB_Checked();
+                    else IsUseGPUCB_UnChecked();
+                }
+            }
+        }
+
+        private bool _isUseGPUEnabled;
+        public bool IsUseGPUEnabled
+        {
+            get => _isUseGPUEnabled;
+            set
+            {
+                if (_isUseGPUEnabled != value)
+                {
+                    _isUseGPUEnabled = value;
+                    OnPropertyChanged(nameof(IsUseGPUEnabled));
+                }
+            }
+        }
+
         private bool _isStartEnabled;
         public bool IsStartEnabled
         {
@@ -70,6 +114,7 @@ namespace FireDetectionWebcam.ViewModels
                 }
             }
         }
+
         private bool _isStopEnabled;
         public bool IsStopEnabled
         {
@@ -85,7 +130,6 @@ namespace FireDetectionWebcam.ViewModels
         }
 
         private bool _isReloadCameraDevicesEnabled;
-
         public bool IsReloadCameraDevicesEnabled
         {
             get => _isReloadCameraDevicesEnabled;
@@ -98,8 +142,6 @@ namespace FireDetectionWebcam.ViewModels
                 }
             }
         }
-
-
         #endregion
 
         #region Command
@@ -110,6 +152,7 @@ namespace FireDetectionWebcam.ViewModels
             {
                 LoadCameraDevicesCmB();
                 IsYoloEnabled = false;
+                IsUseGPUEnabled = false;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
                 IsReloadCameraDevicesEnabled = true;
@@ -123,16 +166,17 @@ namespace FireDetectionWebcam.ViewModels
                 IsReloadCameraDevicesEnabled = false;
                 IsStopEnabled = true;
                 IsStartEnabled = false;
-                var previousState = IsYoloChecked;
+                var previousStateIsYoloChecked = IsYoloChecked;
+                var previousStateIsUseGPUChecked = IsUseGPUChecked;
                 if (_webcamStreamServices == null || _webcamStreamServices.CameraDeviceId != CameraSelected.OpenCvId)
                 {
                     IsYoloEnabled = false;
                     IsYoloChecked = false;
+                    IsUseGPUEnabled = false;
+                    IsUseGPUChecked = false;
                     _webcamStreamServices?.Dispose();
                     _webcamStreamServices = new WebcamStreamServices(
                         imageControl: wd.webcamPreview,
-                        webcamWidth: 640,
-                        webcamHeight: 640,
                         cameraDeviceId: CameraSelected.OpenCvId
                     );
                 }
@@ -141,7 +185,20 @@ namespace FireDetectionWebcam.ViewModels
                 {
                     await _webcamStreamServices.Start();
                     IsYoloEnabled = true;
-                    if (previousState) IsYoloChecked = true;
+                    if (previousStateIsYoloChecked) IsYoloChecked = true;
+
+                    if (GPUInfoServices.haveGPUNvidia())
+                    {
+                        GPUSupport = "Your device have GPU Nvidia\nGPU is supported ";
+                        IsUseGPUEnabled = true;
+                        if (previousStateIsUseGPUChecked) IsUseGPUChecked = true;
+                    }
+                    else 
+                    {
+                        GPUSupport = "Your device don't have GPU Nvidia\nNot support with GPU ";
+                        IsUseGPUEnabled = false;
+                        IsUseGPUChecked = false;
+                    } 
                 }
                 catch (Exception ex)
                 {
@@ -158,6 +215,8 @@ namespace FireDetectionWebcam.ViewModels
 
                 IsYoloEnabled = false;
                 IsYoloChecked = false;
+                IsUseGPUEnabled = false;
+                IsUseGPUChecked = false;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
                 IsReloadCameraDevicesEnabled = true;
@@ -177,7 +236,7 @@ namespace FireDetectionWebcam.ViewModels
             }
         }
         #endregion
-
+    
         public WebcamViewModel()
         {
             Init_Command();
@@ -209,33 +268,31 @@ namespace FireDetectionWebcam.ViewModels
         {
             if (_webcamStreamServices != null)
             {
-                _webcamStreamServices.OnYoloDetect += WebcamStreamServices_OnDetectChecked;
+                _webcamStreamServices.OnYoloDetect = true;
             }
-        }
-
-        private void WebcamStreamServices_OnDetectChecked(object sender, EventArgs e)
-        {
-            //txtQRCodeData.Dispatcher.Invoke(() =>
-            //{
-            //    var qrCodeData = (e as QRCodeReadEventArgs).QRCodeData;
-            //    if (!string.IsNullOrWhiteSpace(qrCodeData))
-            //    {
-            //        txtQRCodeData.Document.Blocks.Clear();
-            //        txtQRCodeData.Document.Blocks.Add(new Paragraph(new Run(qrCodeData)));
-            //        txtQRCodeData.Foreground = new SolidColorBrush(Colors.Green);
-            //    }
-            //    else
-            //    {
-            //        txtQRCodeData.Foreground = new SolidColorBrush(Colors.Red);
-            //    }
-            //});
         }
 
         private void YoloDetectCB_UnChecked()
         {
             if (_webcamStreamServices != null)
             {
-                _webcamStreamServices.OnYoloDetect -= WebcamStreamServices_OnDetectChecked;
+                _webcamStreamServices.OnYoloDetect = false;
+            }
+        }
+
+        private void IsUseGPUCB_Checked()
+        {
+            if(_webcamStreamServices != null)
+            {
+                _webcamStreamServices.OnUseGPU = true;
+            }
+        }
+
+        private void IsUseGPUCB_UnChecked()
+        {
+            if (_webcamStreamServices != null)
+            {
+                _webcamStreamServices.OnUseGPU = false;
             }
         }
     }
