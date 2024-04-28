@@ -1,4 +1,5 @@
 ﻿using System.Management;
+using System.Windows;
 
 namespace FireDetectionWebcam.Services
 {
@@ -11,6 +12,7 @@ namespace FireDetectionWebcam.Services
             foreach (ManagementObject obj in searcher.Get())
             {
                 string gpuName = "" + obj["Name"];
+                MessageBox.Show("Name:" + gpuName);
                 if (gpuName.Contains("Nvidia")) return true;
             }
             return false;

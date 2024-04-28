@@ -4,9 +4,9 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireDetectionWebcam", "FireDetectionWebcam\FireDetectionWebcam.csproj", "{01F457B8-D309-43FD-BB8D-718EEB69B368}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireDetectionWithCPU", "FileDetectionCPU\FireDetectionWithCPU.csproj", "{69F0BFEF-6B4F-4D94-A3A1-25793D1BB519}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireDetectionWithCPU", "FileDetectionCPU\FireDetectionWithCPU.csproj", "{69F0BFEF-6B4F-4D94-A3A1-25793D1BB519}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireDetectionWithGPU", "FileDetectionGPU\FireDetectionWithGPU.csproj", "{B8879025-ADC9-4E5A-B7DB-2974B51C6401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireDetectionWithGPU", "FileDetectionGPU\FireDetectionWithGPU.csproj", "{B8879025-ADC9-4E5A-B7DB-2974B51C6401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
