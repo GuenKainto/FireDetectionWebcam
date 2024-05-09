@@ -27,20 +27,6 @@ namespace FireDetectionWebcam.ViewModels
             }
         }
 
-        private string _gpuSupport;
-        public string GPUSupport
-        {
-            get => _gpuSupport;
-            set
-            {
-                if(_gpuSupport != value)
-                {
-                    _gpuSupport = value;
-                    OnPropertyChanged(nameof(GPUSupport));
-                }
-            }
-        }
-
         private bool _isYoloChecked;
         public bool IsYoloChecked
         {
@@ -67,36 +53,6 @@ namespace FireDetectionWebcam.ViewModels
                 {
                     _isYoloEnabled = value;
                     OnPropertyChanged(nameof(IsYoloEnabled));
-                }
-            }
-        }
-
-        private bool _isUseGPUChecked;
-        public bool IsUseGPUChecked
-        {
-            get => _isUseGPUChecked;
-            set
-            {
-                if (_isUseGPUChecked != value)
-                {
-                    _isUseGPUChecked = value;
-                    OnPropertyChanged(nameof(_isUseGPUChecked));
-                    if (IsUseGPUChecked) IsUseGPUCB_Checked();
-                    else IsUseGPUCB_UnChecked();
-                }
-            }
-        }
-
-        private bool _isUseGPUEnabled;
-        public bool IsUseGPUEnabled
-        {
-            get => _isUseGPUEnabled;
-            set
-            {
-                if (_isUseGPUEnabled != value)
-                {
-                    _isUseGPUEnabled = value;
-                    OnPropertyChanged(nameof(IsUseGPUEnabled));
                 }
             }
         }
@@ -152,7 +108,6 @@ namespace FireDetectionWebcam.ViewModels
             {
                 LoadCameraDevicesCmB();
                 IsYoloEnabled = false;
-                IsUseGPUEnabled = false;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
                 IsReloadCameraDevicesEnabled = true;
@@ -167,13 +122,10 @@ namespace FireDetectionWebcam.ViewModels
                 IsStopEnabled = true;
                 IsStartEnabled = false;
                 var previousStateIsYoloChecked = IsYoloChecked;
-                var previousStateIsUseGPUChecked = IsUseGPUChecked;
                 if (_webcamStreamServices == null || _webcamStreamServices.CameraDeviceId != CameraSelected.OpenCvId)
                 {
                     IsYoloEnabled = false;
                     IsYoloChecked = false;
-                    IsUseGPUEnabled = false;
-                    IsUseGPUChecked = false;
                     _webcamStreamServices?.Dispose();
                     _webcamStreamServices = new WebcamStreamServices(
                         imageControl: wd.webcamPreview,
@@ -186,19 +138,6 @@ namespace FireDetectionWebcam.ViewModels
                     await _webcamStreamServices.Start();
                     IsYoloEnabled = true;
                     if (previousStateIsYoloChecked) IsYoloChecked = true;
-
-                    if (GPUInfoServices.haveGPUNvidia())
-                    {
-                        GPUSupport = "Your device have GPU Nvidia\nGPU is supported ";
-                        IsUseGPUEnabled = true;
-                        if (previousStateIsUseGPUChecked) IsUseGPUChecked = true;
-                    }
-                    else 
-                    {
-                        GPUSupport = "Your device don't have GPU Nvidia\nNot support with GPU ";
-                        IsUseGPUEnabled = false;
-                        IsUseGPUChecked = false;
-                    } 
                 }
                 catch (Exception ex)
                 {
@@ -215,8 +154,6 @@ namespace FireDetectionWebcam.ViewModels
 
                 IsYoloEnabled = false;
                 IsYoloChecked = false;
-                IsUseGPUEnabled = false;
-                IsUseGPUChecked = false;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
                 IsReloadCameraDevicesEnabled = true;
@@ -277,22 +214,6 @@ namespace FireDetectionWebcam.ViewModels
             if (_webcamStreamServices != null)
             {
                 _webcamStreamServices.OnYoloDetect = false;
-            }
-        }
-
-        private void IsUseGPUCB_Checked()
-        {
-            if(_webcamStreamServices != null)
-            {
-                _webcamStreamServices.OnUseGPU = true;
-            }
-        }
-
-        private void IsUseGPUCB_UnChecked()
-        {
-            if (_webcamStreamServices != null)
-            {
-                _webcamStreamServices.OnUseGPU = false;
             }
         }
     }

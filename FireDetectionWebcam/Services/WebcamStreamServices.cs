@@ -60,14 +60,7 @@ namespace FireDetectionWebcam.Services
                                 //{
                                     if (OnYoloDetect)
                                     {
-                                        if (OnUseGPU)
-                                        {
-                                            _lastFrame = await PredictServices.PredictAsyncWithGPU(_lastFrame);
-                                        }
-                                        else
-                                        {
-                                            _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
-                                        }
+                                        _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
                                     }
                                 //}
                                 

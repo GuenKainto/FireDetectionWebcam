@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileDetectionCPU\FireDetectionWithCPU.csproj" />
-    <ProjectReference Include="..\FileDetectionGPU\FireDetectionWithGPU.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

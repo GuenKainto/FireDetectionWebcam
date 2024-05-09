@@ -113,20 +113,6 @@
                         Content="Enable Detect Fire"
                         IsChecked="{Binding IsYoloChecked}"
                         IsEnabled="{Binding IsYoloEnabled}"/>
-
-                    <CheckBox
-                        x:Name="useGPUCB"
-                        Margin="10"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Content="Use GPU for detect Fire"
-                        IsChecked="{Binding IsUseGPUChecked}"
-                        IsEnabled="{Binding IsUseGPUEnabled}"/>
-
-                    <TextBlock 
-                        VerticalAlignment="Center"
-                        Text="{Binding GPUSupport}"
-                        Margin="10"/>
                 </StackPanel>
 
                 <!--<Grid 

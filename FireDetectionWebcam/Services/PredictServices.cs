@@ -12,11 +12,5 @@ namespace FireDetectionWebcam.Services
             var imagePotted = await FireDetectionWithCPU.Detection.PredictAsync(image);
             return (Bitmap)ConvertImageTypeServices.ConvertToSystemDrawingImage(imagePotted);
         }
-        public static async Task<Bitmap> PredictAsyncWithGPU(Bitmap _lastFrame)
-        {
-            var image = ConvertImageTypeServices.ConvertToImageSharpImage(systemDrawingImage: _lastFrame);
-            var imagePotted = await FireDetectionWithGPU.Detection.PredictAsync(image);
-            return (Bitmap)ConvertImageTypeServices.ConvertToSystemDrawingImage(imagePotted);
-        }
     }
 }
