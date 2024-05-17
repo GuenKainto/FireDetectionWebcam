@@ -246,7 +246,8 @@ namespace FireDetectionWebcam.ViewModels
                         }
                         else
                         {
-                            MessageBox.Show("Please the camera");
+                            MessageBox.Show("Please chose the camera");
+                            ReloadEnable();
                         }
                     }
                     try
@@ -255,9 +256,9 @@ namespace FireDetectionWebcam.ViewModels
                         IsYoloEnabled = true;
                         if (previousStateIsYoloChecked) IsYoloChecked = true;
                     }
-                    catch (ApplicationException)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         ReloadEnable();
                     }
 

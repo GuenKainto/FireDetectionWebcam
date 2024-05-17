@@ -2,7 +2,6 @@
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -65,7 +64,7 @@ namespace FireDetectionWebcam.Services
                     var videoCapture = new VideoCapture();
                     if (cameraIp.Length != 0 && isUseWebcamWifi == true)
                     {
-                        MessageBox.Show("Webcam ip :" + cameraIp);
+                       // MessageBox.Show("Webcam ip :" + cameraIp);
                         videoCapture = new VideoCapture(cameraIp);
                         if (!videoCapture.Open(cameraIp))
                         {
@@ -74,7 +73,7 @@ namespace FireDetectionWebcam.Services
                     }
                     else if (cameraDeviceId != -1 && isUseWebcamWifi == false)
                     {
-                        MessageBox.Show("Webcam USB");
+                        //MessageBox.Show("Webcam USB");
                         if (!videoCapture.Open(cameraDeviceId))
                         {
                             throw new ApplicationException("Cannot connect to camera");
@@ -121,62 +120,6 @@ namespace FireDetectionWebcam.Services
                 await _previewTask;
             }
         }
-        public async Task Start22()
-        {
-            try
-            {
-                var videoCapture = new VideoCapture();
-                if (cameraIp.Length != 0 && isUseWebcamWifi == true)
-                {
-                    MessageBox.Show("Webcam ip :" + cameraIp);
-                    videoCapture = new VideoCapture(cameraIp);
-                    if (!videoCapture.Open(cameraIp))
-                    {
-                        throw new ApplicationException("Cannot connect to camera");
-                    }
-                }
-                else if (cameraDeviceId != -1 && isUseWebcamWifi == false)
-                {
-                    MessageBox.Show("Webcam USB");
-                    if (!videoCapture.Open(cameraDeviceId))
-                    {
-                        throw new ApplicationException("Cannot connect to camera");
-                    }
-                }
-                using (var frame = new Mat())
-                {
-                    videoCapture.Read(frame);
-
-                    if (!frame.Empty())
-                    {
-                        _lastFrame = BitmapConverter.ToBitmap(frame);
-                        //if (_currentFrameCount % _detectEveryNFrame == 0) 
-                        //{
-                        if (onYoloDetect)
-                        {
-                            _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame, iou, confidence);
-                        }
-                        //}
-
-                        var lastFrameBitmapImage = _lastFrame.ToBitmapSource();
-                        lastFrameBitmapImage.Freeze();
-                        _imageControl.Dispatcher.Invoke(() =>
-                            _imageControl.Source = lastFrameBitmapImage
-                        );
-                    }
-                    // 30 FPS
-                    await Task.Delay(33);
-                }
-
-                videoCapture?.Dispose();
-            }
-            catch (ApplicationException)
-            {
-                MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-
         public async Task Stop()
         {
             // If "Dispose" before stop
