@@ -2,6 +2,7 @@
 using OpenCvSharp.Extensions;
 using OpenCvSharp.WpfExtensions;
 using System;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,23 +15,40 @@ namespace FireDetectionWebcam.Services
     {
         private System.Drawing.Bitmap _lastFrame;
         private Task _previewTask;
-        public int CameraDeviceId ;
         private Image _imageControl;
         private CancellationTokenSource _cancellationTokenSource;
+        
+        public int cameraDeviceId ;
+        public string cameraIp;
+        public bool onYoloDetect ;
+        public bool isUseWebcamWifi;
+        public float iou;
+        public float confidence;
 
         //private int _currentFrameCount = 0;
         //private const int _detectEveryNFrame = 2;
 
-        public bool OnUseGPU;
-        public bool OnYoloDetect;
-
+        /// <summary>
+        /// set cameraDeviceId = -1 and cameraIp not null to use Webcam Wifi
+        /// set cameraDeviceID != -1 and cameraIp="" to use Webcam USB
+        /// </summary>
+        /// <param name="imageControl"></param>
+        /// <param name="cameraDeviceId"></param>
+        /// <param name="cameraIp"></param>
         public WebcamStreamServices(
             Image imageControl,
-            int cameraDeviceId)
+            int cameraDeviceId,
+            string cameraIp,
+            float iou,
+            float confidence,
+            bool isUseWebcamWifi)
         {
             _imageControl = imageControl;
-            CameraDeviceId = cameraDeviceId;
-            OnUseGPU = false;
+            this.cameraDeviceId = cameraDeviceId;
+            this.cameraIp = cameraIp;
+            this.iou = iou;
+            this.confidence = confidence;
+            this.isUseWebcamWifi = isUseWebcamWifi;
         }
 
         public async Task Start()
@@ -41,12 +59,23 @@ namespace FireDetectionWebcam.Services
                 try
                 {
                     var videoCapture = new VideoCapture();
-
-                    if (!videoCapture.Open(CameraDeviceId))
+                    if (cameraIp.Length != 0 && cameraDeviceId == -1 && isUseWebcamWifi == true)
                     {
-                        throw new ApplicationException("Cannot connect to camera");
+                        MessageBox.Show("Webcam ip :" + cameraIp);
+                        videoCapture = new VideoCapture(cameraIp);
+                        if (!videoCapture.Open(cameraIp))
+                        {
+                            throw new ApplicationException("Cannot connect to camera");
+                        }
                     }
-
+                    else if (cameraDeviceId != -1 && cameraIp.Length == 0 && isUseWebcamWifi == false)
+                    {
+                        MessageBox.Show("Webcam USB");
+                        if (!videoCapture.Open(cameraDeviceId))
+                        {
+                            throw new ApplicationException("Cannot connect to camera");
+                        }
+                    }
                     using (var frame = new Mat())
                     {
                         while (!_cancellationTokenSource.IsCancellationRequested)
@@ -58,9 +87,9 @@ namespace FireDetectionWebcam.Services
                                 _lastFrame = BitmapConverter.ToBitmap(frame);
                                 //if (_currentFrameCount % _detectEveryNFrame == 0) 
                                 //{
-                                    if (OnYoloDetect)
+                                    if (onYoloDetect)
                                     {
-                                        _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame);
+                                        _lastFrame = await PredictServices.PredictAsyncWithCPU(_lastFrame,iou,confidence);
                                     }
                                 //}
                                 

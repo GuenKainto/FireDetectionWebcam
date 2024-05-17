@@ -39,72 +39,126 @@
 
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
             <!--ComboBox-->
-            <StackPanel
-                Grid.Row="0"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
-                <TextBlock
-                    Margin="10"
-                    VerticalAlignment="Center"
-                    Text="Device: " />
-                <ComboBox
-                    x:Name="cmbCameraDevices"
-                    Width="250"
-                    Margin="10"
-                    VerticalAlignment="Center"
-                    ItemsSource="{Binding ListCameras}"
-                    SelectedItem="{Binding CameraSelected, Mode=TwoWay}">
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <StackPanel
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        Text="Device: " />
+                    <ComboBox
+                        x:Name="cmbCameraDevices"
+                        Width="250"
+                        Margin="10"
+                        VerticalAlignment="Center"
+                        ItemsSource="{Binding ListCameras}"
+                        SelectedItem="{Binding CameraSelected, Mode=TwoWay}"
+                        IsEnabled="{Binding IsListCamerasEnabled}">
 
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock
-                                        Width="80"
-                                        FontWeight="SemiBold"
-                                        Text="Name:" />
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock
-                                        Width="80"
-                                        FontWeight="SemiBold"
-                                        Text="OpenCvId:" />
-                                    <TextBlock Text="{Binding OpenCvId}" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            Width="80"
+                                            FontWeight="SemiBold"
+                                            Text="Name:" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            Width="80"
+                                            FontWeight="SemiBold"
+                                            Text="OpenCvId:" />
+                                        <TextBlock Text="{Binding OpenCvId}" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
                                         Width="80"
                                         FontWeight="SemiBold"
                                         Text="DeviceId:" />
-                                    <TextBlock Text="{Binding DeviceId}" />
+                                        <TextBlock Text="{Binding DeviceId}" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button 
-                    Content="{materialDesign:PackIcon Kind=Reload}"
-                    IsEnabled="{Binding IsReloadCameraDevicesEnabled}"
-                    Command="{Binding ReloadCameraDevicesCommand}"
-                    CommandParameter="{Binding ElementName=_this}"/>
-            </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button 
+                        Content="{materialDesign:PackIcon Kind=Reload}"
+                        IsEnabled="{Binding IsReloadCameraDevicesEnabled}"
+                        Command="{Binding ReloadCameraDevicesCommand}"
+                        CommandParameter="{Binding ElementName=_this}"/>
+                </StackPanel>
 
-            
+                <StackPanel
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="Or Webcam Wifi :" />
+                    <TextBox
+                        Width="300" 
+                        Height="25"
+                        Text="{Binding CameraIp}"
+                        IsEnabled="{Binding IsCameraIpEnabled}"/>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Row="3"
+                    HorizontalAlignment="Left"
+                    Orientation="Vertical">
+                    <TextBlock
+                        Padding="25,0,0,0"
+                        VerticalAlignment="Top"
+                        Text="Webcam address please use RTSP urls" />
+                    <TextBlock
+                        Padding="25,0,0,0"
+                        VerticalAlignment="Top"
+                        Text="Connect to the same Wifi as the Webcam before using this feature" />
+                </StackPanel>
+            </Grid>
+
+
             <!--CheckBox-->
             <Grid Grid.Row="1">
-                <!--<Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>-->
-                
-                <StackPanel Margin="20 0 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel 
+                    Grid.Row="0"
+                    Margin="20 0 0 0">          
+                    <CheckBox
+                        x:Name="useWebcamWifiCameraCB"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="Is Use Webcam Wifi"
+                        IsChecked="{Binding IsUseWebcamWifiChecked}"
+                        IsEnabled="{Binding IsUseWebcamWifiEnabled}"/>
+                </StackPanel>
+
+                <StackPanel 
+                    Grid.Row="1"
+                    Margin="20 0 0 0">
                     <CheckBox
                         x:Name="detectFireCB"
                         Margin="10"
@@ -114,18 +168,6 @@
                         IsChecked="{Binding IsYoloChecked}"
                         IsEnabled="{Binding IsYoloEnabled}"/>
                 </StackPanel>
-
-                <!--<Grid 
-                    Grid.Column="0"
-                    Margin="35 0 0 0">
-                    <Grid.RowDefinitions>
-                    </Grid.RowDefinitions>
-
-
-                    <TextBlock 
-                        VerticalAlignment="Center"
-                        Text="Name "/>
-                </Grid>-->
 
             </Grid>
 

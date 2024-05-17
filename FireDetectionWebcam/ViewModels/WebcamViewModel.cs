@@ -27,6 +27,76 @@ namespace FireDetectionWebcam.ViewModels
             }
         }
 
+        private string _cameraIp;
+        public string CameraIp
+        {
+            get => _cameraIp;
+            set
+            {
+                if(_cameraIp != value)
+                {
+                    _cameraIp = value;
+                    OnPropertyChanged(nameof(CameraIp));
+                }
+            }
+        }
+
+        private bool _isUseWebcamWifiChecked;
+        public bool IsUseWebcamWifiChecked
+        {
+            get => _isUseWebcamWifiChecked;
+            set
+            {
+                if (_isUseWebcamWifiChecked != value)
+                {
+                    _isUseWebcamWifiChecked = value;
+                    OnPropertyChanged(nameof(IsUseWebcamWifiChecked));
+                }
+            }
+        }
+
+        private bool _isListCamerasEnabled;
+        public bool IsListCamerasEnabled
+        {
+            get => _isListCamerasEnabled;
+            set
+            {
+                if (_isListCamerasEnabled != value)
+                {
+                    _isListCamerasEnabled = value;
+                    OnPropertyChanged(nameof(IsListCamerasEnabled));
+                }
+            }
+        }
+
+        private bool _isCameraIpEnabled;
+        public bool IsCameraIpEnabled
+        {
+            get => _isCameraIpEnabled;
+            set
+            {
+                if (_isCameraIpEnabled != value)
+                {
+                    _isCameraIpEnabled = value;
+                    OnPropertyChanged(nameof(IsCameraIpEnabled));
+                }
+            }
+        }
+
+        private bool _isUseWebcamWifiEnabled;
+        public bool IsUseWebcamWifiEnabled
+        {
+            get => _isUseWebcamWifiEnabled;
+            set
+            {
+                if (_isUseWebcamWifiEnabled != value)
+                {
+                    _isUseWebcamWifiEnabled = value;
+                    OnPropertyChanged(nameof(IsUseWebcamWifiEnabled));
+                }
+            }
+        }
+
         private bool _isYoloChecked;
         public bool IsYoloChecked
         {
@@ -110,6 +180,9 @@ namespace FireDetectionWebcam.ViewModels
                 IsYoloEnabled = false;
                 IsStartEnabled = true;
                 IsStopEnabled = false;
+                IsUseWebcamWifiEnabled = true;
+                IsListCamerasEnabled = true;
+                IsCameraIpEnabled = true;
                 IsReloadCameraDevicesEnabled = true;
             }
         }
@@ -122,26 +195,87 @@ namespace FireDetectionWebcam.ViewModels
                 IsStopEnabled = true;
                 IsStartEnabled = false;
                 var previousStateIsYoloChecked = IsYoloChecked;
-                if (_webcamStreamServices == null || _webcamStreamServices.CameraDeviceId != CameraSelected.OpenCvId)
+                //if (_webcamStreamServices == null || _webcamStreamServices.cameraDeviceId != CameraSelected.OpenCvId || CameraIp.Length != 0)
+                if (CameraSelected != null || (CameraIp != null && CameraIp.Length != 0))
                 {
+                    IsUseWebcamWifiEnabled = false;
+                    IsListCamerasEnabled = false;
+                    IsCameraIpEnabled = false;
                     IsYoloEnabled = false;
                     IsYoloChecked = false;
-                    _webcamStreamServices?.Dispose();
-                    _webcamStreamServices = new WebcamStreamServices(
-                        imageControl: wd.webcamPreview,
-                        cameraDeviceId: CameraSelected.OpenCvId
-                    );
-                }
+                    if (_webcamStreamServices != null)
+                    {
+                        _webcamStreamServices?.Dispose();
+                    }
 
-                try
-                {
-                    await _webcamStreamServices.Start();
-                    IsYoloEnabled = true;
-                    if (previousStateIsYoloChecked) IsYoloChecked = true;
+                    string cameraIp = "";
+                    int openCVId = -1;
+                    if (IsUseWebcamWifiChecked == true)
+                    {
+                        if (CameraIp != null && CameraIp.Length != 0)
+                        {
+                            cameraIp = CameraIp;
+                            _webcamStreamServices = new WebcamStreamServices(
+                               imageControl: wd.webcamPreview,
+                               cameraDeviceId: openCVId,
+                               cameraIp: cameraIp,
+                               iou: 0.45f,
+                               confidence: 0.329f,
+                               isUseWebcamWifi: true
+                           );
+                            try
+                            {
+                                await _webcamStreamServices.Start();
+                                IsYoloEnabled = true;
+                                if (previousStateIsYoloChecked) IsYoloChecked = true;
+                            }
+                            catch (ApplicationException)
+                            {
+                                MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please enter the ip of camera");
+                            ReloadEnable();
+                        }
+                    }
+                    else
+                    {
+                        if (CameraSelected != null)
+                        {
+                            openCVId = CameraSelected.OpenCvId;
+                            _webcamStreamServices = new WebcamStreamServices(
+                               imageControl: wd.webcamPreview,
+                               cameraDeviceId: openCVId,
+                               cameraIp: cameraIp,
+                               iou: 0.45f,
+                               confidence: 0.329f,
+                               isUseWebcamWifi: false
+                           );
+                            try
+                            {
+                                await _webcamStreamServices.Start();
+                                IsYoloEnabled = true;
+                                if (previousStateIsYoloChecked) IsYoloChecked = true;
+                            }
+                            catch (ApplicationException)
+                            {
+                                MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                ReloadEnable();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please the camera");
+                        }
+                    }
+
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Please chose webcam or enter the ip of webcam!");
+                    ReloadEnable();
                 }
             }
         }
@@ -151,12 +285,7 @@ namespace FireDetectionWebcam.ViewModels
             if (obj is Views.WebcamView)
             {
                 await _webcamStreamServices.Stop();
-
-                IsYoloEnabled = false;
-                IsYoloChecked = false;
-                IsStartEnabled = true;
-                IsStopEnabled = false;
-                IsReloadCameraDevicesEnabled = true;
+                ReloadEnable();
             }
         }
 
@@ -205,7 +334,7 @@ namespace FireDetectionWebcam.ViewModels
         {
             if (_webcamStreamServices != null)
             {
-                _webcamStreamServices.OnYoloDetect = true;
+                _webcamStreamServices.onYoloDetect = true;
             }
         }
 
@@ -213,8 +342,20 @@ namespace FireDetectionWebcam.ViewModels
         {
             if (_webcamStreamServices != null)
             {
-                _webcamStreamServices.OnYoloDetect = false;
+                _webcamStreamServices.onYoloDetect = false;
             }
+        }
+
+        private void ReloadEnable()
+        {
+            IsUseWebcamWifiEnabled = true;
+            IsListCamerasEnabled = true;
+            IsCameraIpEnabled = true;
+            IsYoloEnabled = false;
+            IsYoloChecked = false;
+            IsStartEnabled = true;
+            IsStopEnabled = false;
+            IsReloadCameraDevicesEnabled = true;
         }
     }
 }
