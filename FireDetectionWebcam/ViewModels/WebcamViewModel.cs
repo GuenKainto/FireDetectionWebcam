@@ -223,16 +223,6 @@ namespace FireDetectionWebcam.ViewModels
                                confidence: 0.329f,
                                isUseWebcamWifi: true
                            );
-                            try
-                            {
-                                await _webcamStreamServices.Start();
-                                IsYoloEnabled = true;
-                                if (previousStateIsYoloChecked) IsYoloChecked = true;
-                            }
-                            catch (ApplicationException)
-                            {
-                                MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
                         }
                         else
                         {
@@ -253,23 +243,24 @@ namespace FireDetectionWebcam.ViewModels
                                confidence: 0.329f,
                                isUseWebcamWifi: false
                            );
-                            try
-                            {
-                                await _webcamStreamServices.Start();
-                                IsYoloEnabled = true;
-                                if (previousStateIsYoloChecked) IsYoloChecked = true;
-                            }
-                            catch (ApplicationException)
-                            {
-                                MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                ReloadEnable();
-                            }
                         }
                         else
                         {
                             MessageBox.Show("Please the camera");
                         }
                     }
+                    try
+                    {
+                        await _webcamStreamServices.Start();
+                        IsYoloEnabled = true;
+                        if (previousStateIsYoloChecked) IsYoloChecked = true;
+                    }
+                    catch (ApplicationException)
+                    {
+                        MessageBox.Show("Error: Can't connect to webcam, please check again !", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        ReloadEnable();
+                    }
+
 
                 }
                 else
